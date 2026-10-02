@@ -50,6 +50,8 @@ bool BodyCamera::PlayerView(void* camera,const Config& c,CameraApi& api) {
 bool BodyCamera::Apply(void* camera,float* globalFov,const Config& c,CameraApi& api) {
     if (applied_) Restore(api);
     if (!PlayerView(camera,c,api) || !api.Accessible(globalFov,4)) return false;
+    auto spriteNearClip=api.SpriteNearClip();
+    if (!api.Accessible(spriteNearClip,sizeof(float))) return false;
     auto active=static_cast<char*>(camera)+0x174+Read<uint8_t>(camera,0x59)*0x238;
     auto ped=api.LocalPed();
     auto matrix=Read<void*>(ped,0x14);
@@ -67,10 +69,12 @@ bool BodyCamera::Apply(void* camera,float* globalFov,const Config& c,CameraApi& 
     const auto next=ChestPosition(chest,Read<Vec3>(matrix,0x10),Read<Vec3>(matrix,0),Read<Vec3>(matrix,0x20),
         front,float(c.chestSide),height);
     const float fov=*globalFov,nearClip=Read<float>(rw,kRwNear),camFov=Read<float>(active,kCamFov);
+    const float spriteNear=*spriteNearClip;
     const auto window=Read<Vec2>(rw,kRwWindow);
     if (!std::isfinite(fov) || fov<15 || fov>140 || !std::isfinite(nearClip) || nearClip<=0 || nearClip>5 ||
         !std::isfinite(window.x) || !std::isfinite(window.y) || window.x<=0 || window.y<=0 || window.x>10 || window.y>10 ||
-        !std::isfinite(camFov) || camFov<15 || camFov>140) return false;
+        !std::isfinite(camFov) || camFov<15 || camFov>140 ||
+        !std::isfinite(spriteNear) || spriteNear<=0 || spriteNear>5) return false;
     // CCam's FOV is an input to weapon aiming; CDraw's FOV is the rendered
     // result. Widescreen fixes can scale the former (e.g. 70 -> 88.55).
     // Preserve that native conversion instead of writing the rendered value
@@ -80,6 +84,7 @@ bool BodyCamera::Apply(void* camera,float* globalFov,const Config& c,CameraApi& 
     camera_=camera;rw_=rw;activeCam_=active;globalFov_=globalFov;
     matrixPos_=Read<Vec3>(camera,kMatrixPos);gamePos_=Read<Vec3>(camera,kGamePos);source_=Read<Vec3>(active,kCamSource);
     fov_=fov;near_=nearClip;camFov_=camFov;viewWindow_=window;
+    spriteNearClip_=spriteNearClip;spriteNear_=spriteNear;
     written_=next;writtenFov_=float(c.cameraFov);writtenCamFov_=aimFov;writtenNear_=float(c.cameraNear);
     constexpr float radians=3.14159265358979323846f/360.0f;
     const float halfView=std::tan(writtenFov_*radians);
@@ -89,12 +94,17 @@ bool BodyCamera::Apply(void* camera,float* globalFov,const Config& c,CameraApi& 
     applied_=true; // Set before the first write so fault recovery can restore a partial application.
     Write(camera,kMatrixPos,next);Write(camera,kGamePos,next);Write(active,kCamSource,next);
     *globalFov=writtenFov_;Write(active,kCamFov,writtenCamFov_);
-    api.Near(rw,writtenNear_);api.Window(rw,writtenWindow_);api.Update(camera);
+    api.Near(rw,writtenNear_);
+    // GTA projects pretransformed light sprites with CDraw's cached near clip.
+    // Keep it in step with RwCamera or distant halos can pass the wall's Z test.
+    *spriteNearClip_=writtenNear_;
+    api.Window(rw,writtenWindow_);api.Update(camera);
     return true;
 }
 void BodyCamera::Restore(CameraApi& api) {
     if (!applied_) return;
     applied_=false;
+    if (api.Accessible(spriteNearClip_,sizeof(float)) && *spriteNearClip_==writtenNear_) *spriteNearClip_=spriteNear_;
     if (!api.Accessible(camera_,0xD78)) return;
     // Only undo values still owned by this plugin. Respect later script/mod changes.
     if (Equal(Read<Vec3>(camera_,kMatrixPos),written_)) Write(camera_,kMatrixPos,matrixPos_);

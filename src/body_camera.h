@@ -15,6 +15,7 @@ struct CameraApi {
     virtual bool Accessible(const void* address,size_t bytes)=0;
     virtual void* LocalPed()=0;
     virtual void* Vehicle()=0;
+    virtual float* SpriteNearClip()=0;
     virtual Vec3 Chest(void* ped)=0;
     virtual void Update(void* camera)=0;
     virtual void Near(void* rwCamera,float value)=0;
@@ -32,9 +33,11 @@ private:
     void* rw_=nullptr;
     void* activeCam_=nullptr;
     float* globalFov_=nullptr;
+    float* spriteNearClip_=nullptr;
     Vec3 matrixPos_{}, source_{}, gamePos_{}, written_{};
     Vec2 viewWindow_{}, writtenWindow_{};
     float fov_=0,camFov_=0,near_=0,writtenFov_=0,writtenCamFov_=0,writtenNear_=0;
+    float spriteNear_=0;
     bool applied_=false;
 };
 }

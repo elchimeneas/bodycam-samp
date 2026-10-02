@@ -2,15 +2,15 @@
 
 Una cámara corporal para GTA San Andreas clásico: se selecciona con **V**, muestra los brazos y el arma del personaje y añade un rótulo con fecha, hora, nombre y placa. El FOV, la posición y el efecto de grabación se ajustan desde un INI.
 
-**[Descargar para jugar](https://github.com/elchimeneas/bodycam-samp/releases/tag/v0.4.3)** · [Configuración explicada](Bodycam.ini) · [Código fuente](https://github.com/elchimeneas/bodycam-samp)
+**[Descargar para jugar](https://github.com/elchimeneas/bodycam-samp/releases/tag/v0.4.4)** · [Configuración explicada](Bodycam.ini) · [Código fuente](https://github.com/elchimeneas/bodycam-samp)
 
-**Versión 0.4.3:** descarga de tres archivos e instalación copiando el ASI y el INI. Incluye la corrección de puntería de 0.4.2, comprobada en partida con SA-MP 0.3.DL-R1. El FOV visual predeterminado es 100; puedes conservar tu INI de 0.4.2.
+**Versión 0.4.4:** incorpora el logotipo amarillo dentro del ASI y corrige los halos de luces que se veían a través de paredes en la vista corporal. Conserva la corrección de puntería y el FOV predeterminado de 100. Puedes mantener tu INI de 0.4.2 o 0.4.3.
 
 ## Descarga e instalación
 
 Necesitas **GTA San Andreas clásico para PC, US 1.0, de 32 bits**, SA-MP y un cargador ASI. La referencia de uso es **SA-MP 0.3.DL-R1**. Definitive Edition y otros ejecutables no están soportados; otras versiones de SA-MP no se han validado.
 
-1. En la página de la versión, descarga **`Bodycam-SA-MP-0.4.3.zip`**. Los enlaces de GitHub «Source code» contienen el código para desarrollar, no la descarga lista para jugar.
+1. En la página de la versión, descarga **`Bodycam-SA-MP-0.4.4.zip`**. Los enlaces de GitHub «Source code» contienen el código para desarrollar, no la descarga lista para jugar.
 2. Cierra GTA y extrae el ZIP. Si ya tienes `Bodycam.asi` y `Bodycam.ini` instalados, guarda una copia antes de sustituirlos.
 3. Si ya usas mods ASI, conserva el cargador que tienes. Si no tienes uno, instala la versión **x86/32 bits** de [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) siguiendo su guía. Revisa los archivos existentes antes de sustituir una DLL. El ZIP de Bodycam no incluye el cargador ni archivos del juego.
 4. Copia **`Bodycam.asi` y `Bodycam.ini` junto a `gta_sa.exe`**, en la misma carpeta que utiliza tu cliente SA-MP. Evita tener otra copia de `Bodycam.asi` en `scripts`, `plugins` o `modloader`.
@@ -21,7 +21,7 @@ Necesitas **GTA San Andreas clásico para PC, US 1.0, de 32 bits**, SA-MP y un c
 
 | Archivo | Para qué sirve |
 | --- | --- |
-| `Bodycam.asi` | El plugin compilado de 32 bits que carga el juego. Es el único binario del mod. |
+| `Bodycam.asi` | El plugin compilado de 32 bits que carga el juego. Incluye también el logotipo amarillo; no necesita imágenes externas. |
 | `Bodycam.ini` | Opciones del jugador, explicadas una por una en español. |
 | `README.md` | Esta guía de instalación, controles, ajustes y licencia. |
 
@@ -52,6 +52,7 @@ Abre el [Bodycam.ini](Bodycam.ini) instalado con el Bloc de notas. Guarda y puls
 | `AimHeightOffset=-0.10` | Corrección de la altura, solo al apuntar a pie. |
 | `CameraNearClip=0.04` | Plano de recorte cercano; ya está en el mínimo admitido. |
 | `CameraFOV=100` | Campo de visión. Admite 60–120. |
+| `ShowLogo=1` | Muestra el logotipo amarillo; usa `0` para ocultarlo. |
 | `MarginRight=260` | Aumentar mueve el rótulo a la izquierda, dejando espacio para el HUD. |
 | `RecordingEffect=1` | Cambiar a `0` desactiva el grano y la viñeta. |
 | `EffectIntensity=0.25` | Intensidad suave; admite 0–1. |
@@ -62,7 +63,7 @@ Los brazos y el arma pertenecen al modelo real del personaje. Algunas skins y an
 
 ## Actualizar o retirar
 
-**Actualizar:** cierra GTA, respalda el ASI y el INI actuales y sustituye `Bodycam.asi` por el nuevo. Si vienes de 0.4.2, conserva tu `Bodycam.ini` personalizado: las opciones son las mismas. Para otras versiones, compara el INI nuevo y traslada tus valores antes de copiarlo.
+**Actualizar:** cierra GTA, respalda el ASI y el INI actuales y sustituye `Bodycam.asi` por el nuevo. Si vienes de 0.4.2 o 0.4.3, conserva tu `Bodycam.ini` personalizado: las opciones son las mismas. Para otras versiones, compara el INI nuevo y traslada tus valores antes de copiarlo.
 
 **Retirar:** con GTA cerrado, quita `Bodycam.asi` y `Bodycam.ini`. Puedes borrar también `Bodycam.log`. Para volver a una versión anterior, recupera tu copia del ASI y del INI.
 
@@ -81,15 +82,15 @@ Cambiar el ASI exige reiniciar GTA. No borres el cargador ASI para retirar Bodyc
 
 ## Estado y alcance
 
-**0.4.3 es la versión recomendada.** La vista corporal y la corrección de puntería se han comprobado en GTA SA US 1.0 con SA-MP 0.3.DL-R1. El paquete público usa un icono propio e identificadores genéricos. El alcance de las pruebas se describe en [VALIDACION.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/VALIDACION.md); no equivale a probar todas las skins, armas, servidores o sesiones largas. El diagnóstico de la corrección está en [PUNTERIA.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/PUNTERIA.md).
+**0.4.4 es la versión recomendada.** La vista corporal y la corrección de puntería se han comprobado en GTA SA US 1.0 con SA-MP 0.3.DL-R1. El paquete público incluye el logotipo amarillo y mantiene identificadores genéricos configurables. La corrección de profundidad de las luces también fue confirmada por el jugador; véase [LUCES.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.4/docs/LUCES.md). El alcance de las pruebas se describe en [VALIDACION.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.4/docs/VALIDACION.md); no equivale a probar todas las skins, armas, servidores o sesiones largas. El diagnóstico de la corrección está en [PUNTERIA.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.4/docs/PUNTERIA.md).
 
 No se valida compatibilidad universal con ENB, ReShade u otros mods que cambien la cámara o el renderizado. El servidor puede tener sus propias reglas sobre mods de cámara. El plugin no necesita configuración del servidor ni envía datos por red.
 
 ## Código y licencia
 
-C++17, Windows x86 y Direct3D 9. [Guía de compilación y estructura](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/DESARROLLO.md) · [Historial de cambios](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/CHANGELOG.md) · [Referencias y créditos](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/CREDITOS.md).
+C++17, Windows x86 y Direct3D 9. [Guía de compilación y estructura](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.4/docs/DESARROLLO.md) · [Historial de cambios](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.4/CHANGELOG.md) · [Referencias y créditos](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.4/docs/CREDITOS.md).
 
-Código, documentación e icono original bajo licencia MIT, incluida a continuación. No se distribuyen archivos de GTA, SA-MP, el cargador ASI ni recursos del mod descargado que inspiró la idea.
+El código y la documentación del proyecto se distribuyen bajo la licencia MIT incluida a continuación. El logotipo amarillo de AXON procede del recurso gráfico del mod de referencia aportado por el usuario; ese recurso y las marcas de terceros no están cubiertos por la licencia MIT del proyecto. Bodycam para SA-MP no está afiliado a AXON. No se incluyen archivos de GTA, SA-MP ni el cargador ASI.
 
 ```text
 MIT License

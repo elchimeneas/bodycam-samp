@@ -17,8 +17,8 @@ bool Close(float a,float b) {return std::abs(a-b)<0.00001f;}
 
 struct FakeEngine : CameraApi {
     std::vector<char> camera=std::vector<char>(0xD78),ped=std::vector<char>(0x79C),matrix=std::vector<char>(0x48),rw=std::vector<char>(0x184),vehicle=std::vector<char>(0x100);
-    float fov=70;
-    bool havePed=true,inVehicle=false;
+    float fov=70,spriteNear=0.9f;
+    bool havePed=true,inVehicle=false,haveSpriteNear=true;
     int updates=0;
     Vec3 chest{100,200,21.5f};
     FakeEngine() {
@@ -33,7 +33,7 @@ struct FakeEngine : CameraApi {
         Put(rw.data(),0x80,0.9f);Put(rw.data(),0x68,Vec2{0.7f,0.39375f});
     }
     bool Accessible(const void* ptr,size_t n) override {
-        if (ptr==&fov && n<=sizeof(fov)) return true;
+        if ((ptr==&fov || ptr==&spriteNear) && n<=sizeof(float)) return true;
         const auto p=reinterpret_cast<uintptr_t>(ptr);
         for (const auto* v:{&camera,&ped,&matrix,&rw,&vehicle}) {
             const auto b=reinterpret_cast<uintptr_t>(v->data());
@@ -43,6 +43,7 @@ struct FakeEngine : CameraApi {
     }
     void* LocalPed() override {return havePed?ped.data():nullptr;}
     void* Vehicle() override {return inVehicle?vehicle.data():nullptr;}
+    float* SpriteNearClip() override {return haveSpriteNear?&spriteNear:nullptr;}
     Vec3 Chest(void*) override {return chest;}
     void Update(void*) override {++updates;}
     void Near(void* p,float v) override {Put(p,0x80,v);}
@@ -83,14 +84,51 @@ int main() {
     Check(api.fov==100 && Close(Get<float>(api.rw.data(),0x80),0.04f),"default FOV 100 and near plane applied");
     Check(originalPed==api.ped,"ped and animation state not overwritten by controller");
     camera.Restore(api);
-    Check(api.camera==original && api.rw==originalRw && api.fov==70,"all owned values restored");
+    Check(api.camera==original && api.rw==originalRw && api.fov==70 && api.spriteNear==0.9f,"all owned values restored");
     const int updates=api.updates;camera.Restore(api);Check(updates==api.updates,"restore is idempotent");
+    {
+        FakeEngine depthApi;BodyCamera depthCamera;Config depthConfig;
+        // GTA's pretransformed light sprites use CDraw's near clip, whereas
+        // world geometry uses RwCamera's projection. Reproduce the observed
+        // mismatch (0.30 vs 0.04) with a light behind an opaque wall.
+        const auto depth=[](double z,double nearClip,double farClip) {
+            return farClip/(farClip-nearClip)*(1.0-nearClip/z);
+        };
+        Check(depth(100,0.30,837)<depth(30,0.04,837),"old clip mismatch incorrectly puts rear light in front of wall");
+        for (float nativeNear : {0.1f,0.3f,0.9f}) for (float bodyNear : {0.04f,0.08f,0.2f}) {
+            depthApi.spriteNear=nativeNear;Put(depthApi.rw.data(),0x80,nativeNear);
+            depthConfig.cameraNear=bodyNear;
+            Check(depthCamera.Apply(depthApi.camera.data(),&depthApi.fov,depthConfig,depthApi),"apply camera before light depth test");
+            const auto geometryNear=Get<float>(depthApi.rw.data(),0x80);
+            for (double farClip : {250.0,837.0,1500.0}) for (double wall : {10.0,30.0,80.0}) {
+                const auto wallDepth=depth(wall,geometryNear,farClip);
+                Check(depth(wall*2,depthApi.spriteNear,farClip)>wallDepth,"wall hides a light behind it in bodycam");
+                Check(depth(wall/2,depthApi.spriteNear,farClip)<wallDepth,"light in front of wall remains visible");
+                Check(std::abs(depth(wall,depthApi.spriteNear,farClip)-wallDepth)<1e-12,"sprites and geometry share the same depth projection");
+            }
+            depthCamera.Restore(depthApi);
+            Check(depthApi.spriteNear==nativeNear && Get<float>(depthApi.rw.data(),0x80)==nativeNear,"normal view restores sprite and geometry clip");
+        }
+        Check(depthCamera.Apply(depthApi.camera.data(),&depthApi.fov,depthConfig,depthApi),"apply before independent sprite clip change");
+        depthApi.spriteNear=0.5f;
+        depthCamera.Restore(depthApi);
+        Check(depthApi.spriteNear==0.5f && Get<float>(depthApi.rw.data(),0x80)==0.9f,"later sprite clip change respected while owned camera clip restored");
+        for (float bad : {0.0f,-0.1f,6.0f,std::numeric_limits<float>::infinity(),std::numeric_limits<float>::quiet_NaN()}) {
+            depthApi.spriteNear=bad;
+            const auto beforeCamera=depthApi.camera,beforeRw=depthApi.rw;
+            const auto beforeFov=depthApi.fov;
+            Check(!depthCamera.Apply(depthApi.camera.data(),&depthApi.fov,depthConfig,depthApi),"invalid sprite clip prevents application");
+            Check(depthApi.camera==beforeCamera && depthApi.rw==beforeRw && depthApi.fov==beforeFov,"invalid sprite clip leaves camera untouched");
+        }
+        depthApi.spriteNear=0.3f;depthApi.haveSpriteNear=false;
+        Check(!depthCamera.Apply(depthApi.camera.data(),&depthApi.fov,depthConfig,depthApi),"missing sprite clip prevents application safely");
+    }
     for (int i=0;i<1000;++i) {
         Check(camera.Apply(api.camera.data(),&api.fov,config,api),"repeat apply");
         auto window=Get<Vec2>(api.rw.data(),0x68);window.x+=0.000001f;Put(api.rw.data(),0x68,window);
         camera.Restore(api);
     }
-    Check(api.camera==original && api.rw==originalRw && api.fov==70,"projection never accumulates across frames");
+    Check(api.camera==original && api.rw==originalRw && api.fov==70 && api.spriteNear==0.9f,"projection never accumulates across frames");
     // Regression: a widescreen fix scales the internal aim FOV by 1.265.
     // Project a point on that weapon ray through the rendered camera: it must
     // land on the same off-centre reticle for different FOVs and aspect ratios.

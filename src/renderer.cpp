@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include <wincodec.h>
 #include <wrl/client.h>
 #include <algorithm>
 #include <cmath>
@@ -81,29 +82,46 @@ bool Renderer::UpdateText(const Config& c, const Layout& l) {
     text_->UnlockRect(0); ++updates_;
     return true;
 }
-bool Renderer::CreateLogo(IDirect3DDevice9* d, HMODULE) {
-    // Original, procedural camera icon. No third-party images are embedded.
+bool Renderer::CreateLogo(IDirect3DDevice9* d, HMODULE module) {
     logoAttempted_=true;
-    constexpr unsigned size=64;
-    if (FAILED(d->CreateTexture(size,size,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,&logo_,nullptr))) return false;
-    D3DLOCKED_RECT lock{};
-    if (FAILED(logo_->LockRect(0,&lock,nullptr,0))) {logo_->Release();logo_=nullptr;return false;}
-    for (unsigned y=0;y<size;++y) {
-        auto row=reinterpret_cast<DWORD*>(static_cast<BYTE*>(lock.pBits)+size_t(y)*lock.Pitch);
-        for (unsigned x=0;x<size;++x) {
-            const float dx=float(x)-31.5f,dy=float(y)-33.5f;
-            const float radius=dx*dx+dy*dy;
-            const bool body=x>=13 && x<=50 && y>=9 && y<=58;
-            const bool edge=body && (x<=15 || x>=48 || y<=11 || y>=56);
-            const bool lens=radius>=81 && radius<=144;
-            const bool clip=x>=24 && x<=39 && y>=4 && y<=9;
-            const int rx=int(x)-42,ry=int(y)-18;
-            const bool rec=rx*rx+ry*ry<=9;
-            row[x]=rec?0xFFF06464u:((edge||lens||clip)?0xFFF4F4F4u:(body?0x70000000u:0));
+    const auto res=FindResourceW(module,MAKEINTRESOURCEW(101),RT_RCDATA);
+    if (!res) return false;
+    const auto size=SizeofResource(module,res);
+    const auto data=static_cast<BYTE*>(LockResource(LoadResource(module,res)));
+    if (!data || !size) return false;
+    const HRESULT init=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);
+    bool ok=false;
+    {
+        ComPtr<IWICImagingFactory> factory; ComPtr<IWICStream> stream;
+        ComPtr<IWICBitmapDecoder> decoder; ComPtr<IWICBitmapFrameDecode> frame;
+        ComPtr<IWICFormatConverter> convert;
+        if (SUCCEEDED(CoCreateInstance(CLSID_WICImagingFactory,nullptr,CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&factory))) &&
+            SUCCEEDED(factory->CreateStream(&stream)) && SUCCEEDED(stream->InitializeFromMemory(data,size)) &&
+            SUCCEEDED(factory->CreateDecoderFromStream(stream.Get(),nullptr,WICDecodeMetadataCacheOnLoad,&decoder)) &&
+            SUCCEEDED(decoder->GetFrame(0,&frame)) && SUCCEEDED(factory->CreateFormatConverter(&convert)) &&
+            SUCCEEDED(convert->Initialize(frame.Get(),GUID_WICPixelFormat32bppBGRA,WICBitmapDitherTypeNone,nullptr,0,WICBitmapPaletteTypeCustom))) {
+            UINT w=0,h=0; convert->GetSize(&w,&h);
+            // The source PNG is unmodified. Only its logo region is drawn by the UI.
+            if (w==456 && h==92) {
+                std::vector<BYTE> bytes(size_t(w)*h*4);
+                if (SUCCEEDED(convert->CopyPixels(nullptr,w*4,UINT(bytes.size()),bytes.data())) &&
+                    SUCCEEDED(d->CreateTexture(512,128,1,0,D3DFMT_A8R8G8B8,D3DPOOL_MANAGED,&logo_,nullptr))) {
+                    D3DLOCKED_RECT lock{};
+                    if (SUCCEEDED(logo_->LockRect(0,&lock,nullptr,0))) {
+                        for (unsigned y=0;y<128;++y) {
+                            auto row=static_cast<BYTE*>(lock.pBits)+size_t(y)*lock.Pitch;
+                            std::memset(row,0,512*4);
+                            if (y<h) std::memcpy(row,bytes.data()+size_t(y)*w*4,w*4);
+                        }
+                        logo_->UnlockRect(0); ok=true;
+                    }
+                }
+            }
         }
     }
-    logo_->UnlockRect(0);
-    return true;
+    if (SUCCEEDED(init)) CoUninitialize();
+    if (!ok && logo_) { logo_->Release(); logo_=nullptr; }
+    return ok;
 }
 struct Vertex { float x,y,z,rhw; DWORD color; float u,v; };
 bool Renderer::CreateEffects(IDirect3DDevice9* d) {
@@ -204,8 +222,8 @@ bool Renderer::Draw(IDirect3DDevice9* d, const Config& c, HMODULE module, bool f
     if (c.enabled) textResult=Quad(d,text_,x,y,float(l.width),float(l.height),color,0,0,float(l.width)/width_,float(l.height)/height_);
     HRESULT logoResult=S_OK;
     if (c.enabled && c.showLogo && logo_) logoResult=Quad(d,logo_,x+l.width-l.pad-l.logo,y+l.pad+float(l.line)/2,
-        float(l.logo),float(l.logo),color,0,0,1,1);
+        float(l.logo),float(l.logo),color,365.0f/512,3.0f/128,455.0f/512,91.0f/128);
     const HRESULT restored=state->Apply(); ++frames_;
-    return SUCCEEDED(restored) && SUCCEEDED(textResult) && SUCCEEDED(logoResult) && SUCCEEDED(effectResult) && (!effect || effectReady);
+    return SUCCEEDED(restored) && SUCCEEDED(textResult) && SUCCEEDED(logoResult) && SUCCEEDED(effectResult) && (!effect || effectReady) && (!c.enabled || !c.showLogo || logo_);
 }
 }

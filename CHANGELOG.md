@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.4 — Logotipo amarillo y profundidad de las luces
+
+- La descarga pública muestra el mismo logotipo amarillo que la instalación de referencia. La imagen va integrada en `Bodycam.asi`; el ZIP sigue conteniendo solo el ASI, el INI y el README.
+- Comprueba el dibujo del logo desde el recurso del ASI compilado a 1080p y 4K, y su ocultación con `ShowLogo=0`.
+- Sincroniza el plano cercano usado por los sprites de luces con el de la cámara corporal, para corregir halos que pasan por delante de paredes que deberían ocultarlos.
+- Restaura el valor anterior al salir de la vista y respeta cambios posteriores de otros mods. Conserva la corrección de puntería y las opciones del INI.
+- Añade una prueba que reproduce el fallo anterior y comprueba la oclusión y la restauración. Corrección aceptada por el jugador con la versión local de prueba; véase [LUCES.md](docs/LUCES.md).
+
 ## 0.4.3 — Descarga simplificada
 
 - El ZIP contiene únicamente `Bodycam.asi`, `Bodycam.ini` y `README.md`, directamente en su raíz.

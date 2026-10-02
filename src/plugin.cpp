@@ -38,6 +38,7 @@ public:
     }
     void* LocalPed() override {return reinterpret_cast<void*(__cdecl*)(int)>(0x56E210)(-1);}
     void* Vehicle() override {return reinterpret_cast<void*(__cdecl*)(int,bool)>(0x56E0D0)(-1,false);}
+    float* SpriteNearClip() override {return reinterpret_cast<float*>(0xC3EFA0);} // CDraw::ms_fNearClipZ
     bodycam::Vec3 Chest(void* ped) override {
         bodycam::Vec3 v;
         reinterpret_cast<void(__thiscall*)(void*,bodycam::Vec3&,unsigned,bool)>(0x5E4280)(ped,v,4,true);
@@ -259,7 +260,7 @@ void Init() {
     if (!len || len>=32768) return;
     std::wstring dir(file,len);dir.resize(dir.find_last_of(L"\\/")+1);
     iniPath=dir+L"Bodycam.ini";logPath=dir+L"Bodycam.log";
-    Log("Bodycam 0.4.3 - preserve native/rendered FOV conversion for aiming, Windows x86",true);
+    Log("Bodycam 0.4.4 - embedded yellow logo, synchronized light depth and corrected aim, Windows x86",true);
     if (!SupportedHost()) {Log("Unsupported host or modified hook signature. No hooks installed.");return;}
     if (!WriteCall(kShutdown,Shutdown,originalShutdown,shutdownOriginal)) {Log("Shutdown hook unavailable; overlay inactive.");return;}
     if (!WriteCall(kHud,DrawHud,originalHud,hudOriginal)) {

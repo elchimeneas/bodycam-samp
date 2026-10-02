@@ -25,7 +25,7 @@ La nueva prueba geométrica falla con el código anterior y pasa con la correcci
 
 **Comprobación en partida:** el 2 de octubre de 2026, tras instalar `0.4.2-test1-local`, el jugador confirmó que la puntería funcionaba correctamente en su instalación de GTA SA US 1.0 con SA-MP 0.3.DL-R1. No se registró una matriz exhaustiva de armas ni distancias.
 
-El código de cámara de esa compilación de prueba es idéntico al de 0.4.2. El paquete público conserva su icono propio y sus datos de ejemplo, y se compila en Release x86. La confirmación del jugador corresponde a la compilación local; el binario público final se somete a las pruebas automáticas de cámara, gráficos e instalación. Queda por ampliar la comprobación a otras combinaciones de mods, armas y sesiones largas.
+El código de cámara de esa compilación de prueba es idéntico al de 0.4.2. Aquel paquete público se compiló en Release x86 con un icono propio y datos de ejemplo. La confirmación del jugador corresponde a la compilación local; el binario público de 0.4.2 se sometió a las pruebas automáticas de cámara, gráficos e instalación. Desde 0.4.4 se incluye el logotipo amarillo y la corrección de profundidad descrita en [LUCES.md](LUCES.md), conservando este ajuste de puntería. Queda por ampliar la comprobación a otras combinaciones de mods, armas y sesiones largas.
 
 ## Referencias
 
