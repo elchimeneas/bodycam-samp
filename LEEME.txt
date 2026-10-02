@@ -1,0 +1,42 @@
+BODYCAM SA-MP 0.4.1
+https://github.com/elchimeneas/bodycam-samp
+
+REQUISITOS
+GTA San Andreas clasico PC US 1.0 (32 bits), SA-MP y un cargador ASI.
+Referencia de uso: SA-MP 0.3.DL-R1. No sirve para Definitive Edition.
+Cargador ASI oficial: https://github.com/ThirteenAG/Ultimate-ASI-Loader
+Usa x86, o conserva el cargador existente si tus otros ASI funcionan.
+
+INSTALAR
+1. Cierra GTA. Extrae todo el ZIP fuera de la carpeta del juego.
+2. Ejecuta INSTALAR.cmd. Indica la carpeta que tiene gta_sa.exe y samp.dll.
+3. El instalador respalda los dos archivos anteriores de Bodycam, si existen.
+4. Abre SA-MP y recorre las vistas con V: la bodycam sigue a la mas cercana.
+
+Bodycam.asi es el plugin compilado. Bodycam.ini contiene tus opciones.
+Gestionar.ps1 es el instalador; los CMD lo abren. manifest.json verifica
+el paquete. README.md contiene la guia completa; docs explica sus limites.
+LICENSE contiene la licencia. El ZIP no incluye archivos de GTA ni SA-MP.
+
+CONFIGURAR
+Edita Bodycam.ini en GTA DESPUES de instalar; guarda como UTF-8 y recarga
+con Ctrl+Shift+R. Cada opcion tiene su explicacion, rango y valor inicial.
+FOV inicial: 100. RecordingEffect=0 quita el efecto. MarginRight mueve
+el rotulo: un numero mayor lo separa mas del HUD de la derecha.
+Ctrl+Shift+B muestra/oculta el rotulo. No graba video.
+
+ACTUALIZAR / RETIRAR
+Si usaste el instalador: cierra GTA y ejecuta RETIRAR.cmd antes de instalar
+otro paquete. Recupera los archivos previos y guarda los actuales en
+Bodycam_Backups/retirada-*. Conserva esa carpeta y Bodycam.estado.json.
+Tras instalar la actualizacion, pasa tus valores al nuevo INI.
+Si instalaste a mano: respalda y sustituye Bodycam.asi y Bodycam.ini con
+GTA cerrado; para retirar, elimina esos dos y recupera tu respaldo manual.
+No borres el cargador ASI: otros mods pueden necesitarlo.
+
+AYUDA
+Primera version publica, en desarrollo. Algunas skins necesitan ajustar
+la posicion. No se garantizan compatibilidad con todos los mods ni 60 FPS.
+Consulta README.md y docs/VALIDACION.md. Al informar de un fallo, incluye
+version de GTA/SA-MP, mods de camara, pasos y Bodycam.log sin datos privados.
+https://github.com/elchimeneas/bodycam-samp/issues

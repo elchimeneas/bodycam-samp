@@ -1,0 +1,11 @@
+/build*/
+/dist/
+/.vs/
+*.user
+*.log
+*.pdb
+*.obj
+*.lib
+*.ilk
+Bodycam.estado.json
+Bodycam_Backups/
