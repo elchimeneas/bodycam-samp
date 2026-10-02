@@ -91,6 +91,43 @@ int main() {
         camera.Restore(api);
     }
     Check(api.camera==original && api.rw==originalRw && api.fov==70,"projection never accumulates across frames");
+    // Regression: a widescreen fix scales the internal aim FOV by 1.265.
+    // Project a point on that weapon ray through the rendered camera: it must
+    // land on the same off-centre reticle for different FOVs and aspect ratios.
+    for (float multiplier : {1.0f,1.265f}) for (float desired : {60.0f,100.0f,120.0f}) for (float aspect : {4.0f/3,16.0f/9,21.0f/9}) {
+        FakeEngine wideApi;BodyCamera wideCamera;Config wideConfig;
+        Put(wideApi.camera.data(),0x174+0xC,uint16_t(53));
+        const float nativeFov=70.0f*multiplier;
+        wideApi.fov=nativeFov;wideConfig.cameraFov=desired;
+        Put(wideApi.rw.data(),0x68,Vec2{0.7f,0.7f/aspect});
+        const auto beforeWide=wideApi.camera,beforeRw=wideApi.rw;
+        for (int iteration=0;iteration<3;++iteration) {
+            Check(wideCamera.Apply(wideApi.camera.data(),&wideApi.fov,wideConfig,wideApi),"widescreen aim camera applies");
+            const float internalFov=Get<float>(wideApi.camera.data(),0x174+0xB4);
+            const float aimSpread=std::tan(internalFov*multiplier*3.14159265358979323846f/360.0f);
+            const auto projection=Get<Vec2>(wideApi.rw.data(),0x68);
+            constexpr float crossX=0.53f,crossY=0.40f;
+            const float rayX=(2*crossX-1)*aimSpread,rayY=(1-2*crossY)*aimSpread/aspect;
+            Check(Close(0.5f+rayX/(2*projection.x),crossX) && Close(0.5f-rayY/(2*projection.y),crossY),
+                "weapon ray projects onto reticle with widescreen FOV correction");
+            Check(wideApi.fov==desired,"requested visual FOV preserved");
+            wideCamera.Restore(wideApi);
+            Check(wideApi.camera==beforeWide && wideApi.rw==beforeRw && wideApi.fov==nativeFov,"internal and rendered FOV restored independently");
+        }
+    }
+    {
+        FakeEngine other;BodyCamera owned;Config settings;
+        other.fov=88.55f;
+        Check(owned.Apply(other.camera.data(),&other.fov,settings,other),"apply before independent internal FOV change");
+        Put(other.camera.data(),0x174+0xB4,65.0f);
+        owned.Restore(other);
+        Check(Get<float>(other.camera.data(),0x174+0xB4)==65 && other.fov==88.55f,"later internal FOV change retained while visual FOV restored");
+        for (float bad : {0.0f,-70.0f,std::numeric_limits<float>::infinity(),std::numeric_limits<float>::quiet_NaN()}) {
+            Put(other.camera.data(),0x174+0xB4,bad);
+            const auto untouched=other.camera;
+            Check(!owned.Apply(other.camera.data(),&other.fov,settings,other) && other.camera==untouched,"invalid native aim FOV rejected before writing");
+        }
+    }
     Check(camera.Apply(api.camera.data(),&api.fov,config,api),"apply before external camera change");
     Put(api.camera.data(),0x974+0x30,Vec3{10,20,30});api.fov=80;
     camera.Restore(api);

@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.2 — Corrección de puntería
+
+- Corrige el desvío entre la mira y el disparo cuando un ajuste panorámico aplica una conversión proporcional entre el FOV interno del juego y el FOV visual.
+- Mantiene el FOV visual elegido en el INI, con valor predeterminado de 100. Guarda y restaura por separado los dos valores de FOV.
+- Añade pruebas de alineación del rayo del arma con FOV 60/100/120 y formatos 4:3, 16:9 y 21:9, además de comprobaciones de restauración y valores inválidos.
+- Corrección confirmada por el jugador en SA-MP 0.3.DL-R1 usando la compilación local de prueba. La versión pública contiene el mismo código de cámara corregido.
+- Actualiza las guías y aclara que `CameraFOV` representa el campo de visión visual. No añade opciones ni requiere cambiar los valores del INI.
+
 ## 0.4.1 — Primera versión pública
 
 - Cámara corporal dentro del ciclo de vistas de GTA, después de la vista cercana.

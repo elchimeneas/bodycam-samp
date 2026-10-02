@@ -2,13 +2,15 @@
 
 Una cámara corporal para GTA San Andreas clásico: se selecciona con **V**, muestra los brazos y el arma del personaje y añade un rótulo con fecha, hora, nombre y placa. El FOV, la posición y el efecto de grabación se ajustan desde un INI.
 
-**[Descargar para jugar](https://github.com/elchimeneas/bodycam-samp/releases/tag/v0.4.1)** · [Configuración explicada](Bodycam.ini) · [Compilar el código](docs/DESARROLLO.md) · [Cambios](CHANGELOG.md)
+**[Descargar para jugar](https://github.com/elchimeneas/bodycam-samp/releases/tag/v0.4.2)** · [Configuración explicada](Bodycam.ini) · [Compilar el código](docs/DESARROLLO.md) · [Cambios](CHANGELOG.md)
+
+**Versión 0.4.2:** corrige el desvío de los disparos respecto a la mira con ajustes panorámicos proporcionales. La corrección se ha comprobado en partida con SA-MP 0.3.DL-R1. El FOV visual predeterminado sigue siendo 100; puedes conservar tus valores del INI.
 
 ## Descarga e instalación
 
 Necesitas **GTA San Andreas clásico para PC, US 1.0, de 32 bits**, SA-MP y un cargador ASI. La referencia de uso es **SA-MP 0.3.DL-R1**. Definitive Edition y otros ejecutables no están soportados; otras versiones de SA-MP no se han validado.
 
-1. En la página de la versión, descarga **`Bodycam-SA-MP-0.4.1.zip`**. Los enlaces de GitHub «Source code» contienen el código para desarrollar, no la descarga lista para jugar.
+1. En la página de la versión, descarga **`Bodycam-SA-MP-0.4.2.zip`**. Los enlaces de GitHub «Source code» contienen el código para desarrollar, no la descarga lista para jugar.
 2. Extrae **todo** el ZIP en una carpeta temporal, fuera de la carpeta de GTA. Cierra GTA.
 3. Si ya usas mods ASI, conserva el cargador que tienes. Si no tienes uno, instala la versión **x86/32 bits** de [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) siguiendo su guía. Revisa los archivos existentes antes de sustituir una DLL. El ZIP de Bodycam no incluye el cargador ni archivos del juego.
 4. Ejecuta **`INSTALAR.cmd`** y escribe la ruta de la carpeta que contiene `gta_sa.exe` y `samp.dll`. Usa la misma instalación que abre tu cliente SA-MP. Normalmente no necesitas ejecutar como administrador.
@@ -88,7 +90,7 @@ Cambiar el ASI exige reiniciar GTA. No borres el cargador ASI para retirar Bodyc
 
 ## Estado y alcance
 
-**0.4.1 es la primera versión pública, en desarrollo.** La base se ha usado en GTA SA US 1.0 con SA-MP 0.3.DL-R1; la vista y el apuntado se ajustaron durante esas pruebas. El paquete público cambia el icono, usa identificadores genéricos y reúne la configuración final. Sus comprobaciones automáticas se describen en [VALIDACION.md](docs/VALIDACION.md); no equivalen a probar todas las skins, armas, servidores o sesiones largas.
+**0.4.2 es la versión recomendada.** La vista corporal y la corrección de puntería se han comprobado en GTA SA US 1.0 con SA-MP 0.3.DL-R1. El paquete público usa un icono propio e identificadores genéricos. El alcance de las pruebas se describe en [VALIDACION.md](docs/VALIDACION.md); no equivale a probar todas las skins, armas, servidores o sesiones largas. El diagnóstico de la corrección está en [PUNTERIA.md](docs/PUNTERIA.md).
 
 No se valida compatibilidad universal con ENB, ReShade u otros mods que cambien la cámara o el renderizado. El servidor puede tener sus propias reglas sobre mods de cámara. El plugin no necesita configuración del servidor ni envía datos por red.
 

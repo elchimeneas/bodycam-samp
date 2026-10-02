@@ -259,7 +259,7 @@ void Init() {
     if (!len || len>=32768) return;
     std::wstring dir(file,len);dir.resize(dir.find_last_of(L"\\/")+1);
     iniPath=dir+L"Bodycam.ini";logPath=dir+L"Bodycam.log";
-    Log("Bodycam 0.4.1 - native view cycle, camera effect and HUD margin, Windows x86",true);
+    Log("Bodycam 0.4.2 - preserve native/rendered FOV conversion for aiming, Windows x86",true);
     if (!SupportedHost()) {Log("Unsupported host or modified hook signature. No hooks installed.");return;}
     if (!WriteCall(kShutdown,Shutdown,originalShutdown,shutdownOriginal)) {Log("Shutdown hook unavailable; overlay inactive.");return;}
     if (!WriteCall(kHud,DrawHud,originalHud,hudOriginal)) {

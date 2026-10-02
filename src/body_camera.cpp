@@ -70,11 +70,17 @@ bool BodyCamera::Apply(void* camera,float* globalFov,const Config& c,CameraApi& 
     const auto window=Read<Vec2>(rw,kRwWindow);
     if (!std::isfinite(fov) || fov<15 || fov>140 || !std::isfinite(nearClip) || nearClip<=0 || nearClip>5 ||
         !std::isfinite(window.x) || !std::isfinite(window.y) || window.x<=0 || window.y<=0 || window.x>10 || window.y>10 ||
-        !std::isfinite(camFov)) return false;
+        !std::isfinite(camFov) || camFov<15 || camFov>140) return false;
+    // CCam's FOV is an input to weapon aiming; CDraw's FOV is the rendered
+    // result. Widescreen fixes can scale the former (e.g. 70 -> 88.55).
+    // Preserve that native conversion instead of writing the rendered value
+    // into both fields and applying the widescreen correction twice to aim.
+    const float aimFov=float(c.cameraFov)*camFov/fov;
+    if (!std::isfinite(aimFov) || aimFov<15 || aimFov>140) return false;
     camera_=camera;rw_=rw;activeCam_=active;globalFov_=globalFov;
     matrixPos_=Read<Vec3>(camera,kMatrixPos);gamePos_=Read<Vec3>(camera,kGamePos);source_=Read<Vec3>(active,kCamSource);
     fov_=fov;near_=nearClip;camFov_=camFov;viewWindow_=window;
-    written_=next;writtenFov_=float(c.cameraFov);writtenNear_=float(c.cameraNear);
+    written_=next;writtenFov_=float(c.cameraFov);writtenCamFov_=aimFov;writtenNear_=float(c.cameraNear);
     constexpr float radians=3.14159265358979323846f/360.0f;
     const float halfView=std::tan(writtenFov_*radians);
     // Absolute projection avoids compounding a projection rebuilt later by CameraSize.
@@ -82,7 +88,7 @@ bool BodyCamera::Apply(void* camera,float* globalFov,const Config& c,CameraApi& 
     writtenWindow_=aspect>=1.0f?Vec2{halfView,halfView/aspect}:Vec2{halfView*aspect,halfView};
     applied_=true; // Set before the first write so fault recovery can restore a partial application.
     Write(camera,kMatrixPos,next);Write(camera,kGamePos,next);Write(active,kCamSource,next);
-    *globalFov=writtenFov_;Write(active,kCamFov,writtenFov_);
+    *globalFov=writtenFov_;Write(active,kCamFov,writtenCamFov_);
     api.Near(rw,writtenNear_);api.Window(rw,writtenWindow_);api.Update(camera);
     return true;
 }
@@ -94,7 +100,7 @@ void BodyCamera::Restore(CameraApi& api) {
     if (Equal(Read<Vec3>(camera_,kMatrixPos),written_)) Write(camera_,kMatrixPos,matrixPos_);
     if (Equal(Read<Vec3>(camera_,kGamePos),written_)) Write(camera_,kGamePos,gamePos_);
     if (Equal(Read<Vec3>(activeCam_,kCamSource),written_)) Write(activeCam_,kCamSource,source_);
-    if (Read<float>(activeCam_,kCamFov)==writtenFov_) Write(activeCam_,kCamFov,camFov_);
+    if (Read<float>(activeCam_,kCamFov)==writtenCamFov_) Write(activeCam_,kCamFov,camFov_);
     const bool ownsFov=api.Accessible(globalFov_,4) && *globalFov_==writtenFov_;
     if (ownsFov) *globalFov_=fov_;
     if (Read<void*>(camera_,kRw)==rw_ && api.Accessible(rw_,0x88)) {

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(Bodycam VERSION 0.4.1 LANGUAGES CXX RC)
+project(Bodycam VERSION 0.4.2 LANGUAGES CXX RC)
 if(NOT WIN32 OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
   message(FATAL_ERROR "Bodycam requires Windows x86 (-A Win32)")
 endif()

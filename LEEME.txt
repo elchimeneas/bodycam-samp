@@ -1,4 +1,4 @@
-BODYCAM SA-MP 0.4.1
+BODYCAM SA-MP 0.4.2
 https://github.com/elchimeneas/bodycam-samp
 
 REQUISITOS
@@ -35,8 +35,9 @@ GTA cerrado; para retirar, elimina esos dos y recupera tu respaldo manual.
 No borres el cargador ASI: otros mods pueden necesitarlo.
 
 AYUDA
-Primera version publica, en desarrollo. Algunas skins necesitan ajustar
-la posicion. No se garantizan compatibilidad con todos los mods ni 60 FPS.
+0.4.2 corrige la punteria con ajustes panoramicos proporcionales; comprobado
+en SA-MP 0.3.DL-R1. Algunas skins necesitan ajustar la posicion. No se
+garantizan compatibilidad con todos los mods ni 60 FPS.
 Consulta README.md y docs/VALIDACION.md. Al informar de un fallo, incluye
 version de GTA/SA-MP, mods de camara, pasos y Bodycam.log sin datos privados.
 https://github.com/elchimeneas/bodycam-samp/issues

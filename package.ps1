@@ -1,7 +1,7 @@
 param()
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
-$version='0.4.1'
+$version='0.4.2'
 $name="Bodycam-SA-MP-$version"
 $binary=Join-Path $PSScriptRoot 'build\Release\Bodycam.asi'
 if (-not (Test-Path -LiteralPath $binary)) { throw 'Compila Release con build.ps1 primero.' }
@@ -20,7 +20,7 @@ foreach ($file in @('Bodycam.ini','INSTALAR.cmd','RETIRAR.cmd','Gestionar.ps1','
 }
 $docs=Join-Path $package 'docs'
 New-Item -ItemType Directory -Path $docs | Out-Null
-foreach ($file in @('VALIDACION.md','CREDITOS.md','DESARROLLO.md')) {
+foreach ($file in @('VALIDACION.md','CREDITOS.md','DESARROLLO.md','PUNTERIA.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot "docs\$file") -Destination (Join-Path $docs $file)
 }
 $files=@('Bodycam.asi','Bodycam.ini') | ForEach-Object {

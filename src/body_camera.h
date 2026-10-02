@@ -34,7 +34,7 @@ private:
     float* globalFov_=nullptr;
     Vec3 matrixPos_{}, source_{}, gamePos_{}, written_{};
     Vec2 viewWindow_{}, writtenWindow_{};
-    float fov_=0,camFov_=0,near_=0,writtenFov_=0,writtenNear_=0;
+    float fov_=0,camFov_=0,near_=0,writtenFov_=0,writtenCamFov_=0,writtenNear_=0;
     bool applied_=false;
 };
 }
