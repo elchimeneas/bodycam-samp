@@ -2,22 +2,20 @@
 
 Una cámara corporal para GTA San Andreas clásico: se selecciona con **V**, muestra los brazos y el arma del personaje y añade un rótulo con fecha, hora, nombre y placa. El FOV, la posición y el efecto de grabación se ajustan desde un INI.
 
-**[Descargar para jugar](https://github.com/elchimeneas/bodycam-samp/releases/tag/v0.4.2)** · [Configuración explicada](Bodycam.ini) · [Compilar el código](docs/DESARROLLO.md) · [Cambios](CHANGELOG.md)
+**[Descargar para jugar](https://github.com/elchimeneas/bodycam-samp/releases/tag/v0.4.3)** · [Configuración explicada](Bodycam.ini) · [Código fuente](https://github.com/elchimeneas/bodycam-samp)
 
-**Versión 0.4.2:** corrige el desvío de los disparos respecto a la mira con ajustes panorámicos proporcionales. La corrección se ha comprobado en partida con SA-MP 0.3.DL-R1. El FOV visual predeterminado sigue siendo 100; puedes conservar tus valores del INI.
+**Versión 0.4.3:** descarga de tres archivos e instalación copiando el ASI y el INI. Incluye la corrección de puntería de 0.4.2, comprobada en partida con SA-MP 0.3.DL-R1. El FOV visual predeterminado es 100; puedes conservar tu INI de 0.4.2.
 
 ## Descarga e instalación
 
 Necesitas **GTA San Andreas clásico para PC, US 1.0, de 32 bits**, SA-MP y un cargador ASI. La referencia de uso es **SA-MP 0.3.DL-R1**. Definitive Edition y otros ejecutables no están soportados; otras versiones de SA-MP no se han validado.
 
-1. En la página de la versión, descarga **`Bodycam-SA-MP-0.4.2.zip`**. Los enlaces de GitHub «Source code» contienen el código para desarrollar, no la descarga lista para jugar.
-2. Extrae **todo** el ZIP en una carpeta temporal, fuera de la carpeta de GTA. Cierra GTA.
+1. En la página de la versión, descarga **`Bodycam-SA-MP-0.4.3.zip`**. Los enlaces de GitHub «Source code» contienen el código para desarrollar, no la descarga lista para jugar.
+2. Cierra GTA y extrae el ZIP. Si ya tienes `Bodycam.asi` y `Bodycam.ini` instalados, guarda una copia antes de sustituirlos.
 3. Si ya usas mods ASI, conserva el cargador que tienes. Si no tienes uno, instala la versión **x86/32 bits** de [Ultimate ASI Loader](https://github.com/ThirteenAG/Ultimate-ASI-Loader) siguiendo su guía. Revisa los archivos existentes antes de sustituir una DLL. El ZIP de Bodycam no incluye el cargador ni archivos del juego.
-4. Ejecuta **`INSTALAR.cmd`** y escribe la ruta de la carpeta que contiene `gta_sa.exe` y `samp.dll`. Usa la misma instalación que abre tu cliente SA-MP. Normalmente no necesitas ejecutar como administrador.
-5. El instalador comprueba la versión del ejecutable y las huellas del paquete, guarda los archivos anteriores de Bodycam y copia `Bodycam.asi` y `Bodycam.ini` junto a `gta_sa.exe`.
+4. Copia **`Bodycam.asi` y `Bodycam.ini` junto a `gta_sa.exe`**, en la misma carpeta que utiliza tu cliente SA-MP. Evita tener otra copia de `Bodycam.asi` en `scripts`, `plugins` o `modloader`.
+5. Abre `Bodycam.ini` con el Bloc de notas si quieres cambiar el nombre, la placa o los ajustes. `README.md` es esta guía y no necesita copiarse a GTA.
 6. Abre SA-MP, entra al servidor y pulsa V para recorrer las vistas. La bodycam va después de la vista más cercana al personaje.
-
-Personaliza el INI **después de instalar**, dentro de GTA. El instalador rechaza un INI modificado en el ZIP extraído porque verifica que el paquete esté intacto. Conserva la carpeta extraída para poder ejecutar `RETIRAR.cmd`.
 
 ### Qué incluye cada archivo
 
@@ -25,18 +23,9 @@ Personaliza el INI **después de instalar**, dentro de GTA. El instalador rechaz
 | --- | --- |
 | `Bodycam.asi` | El plugin compilado de 32 bits que carga el juego. Es el único binario del mod. |
 | `Bodycam.ini` | Opciones del jugador, explicadas una por una en español. |
-| `INSTALAR.cmd` | Abre el instalador con respaldo y verificación. |
-| `RETIRAR.cmd` | Recupera los archivos que había antes de instalar este paquete. |
-| `Gestionar.ps1` | Script que utilizan los dos accesos anteriores. |
-| `manifest.json` | Versión y huellas SHA-256 de los dos archivos que se instalan. |
-| `LEEME.txt` | Guía rápida que puedes leer sin conexión. |
-| `README.md`, `docs/`, `CHANGELOG.md`, `LICENSE` | Guía completa, límites conocidos, cambios y licencia. |
+| `README.md` | Esta guía de instalación, controles, ajustes y licencia. |
 
-El juego genera `Bodycam.log`, un registro breve de carga. El instalador crea `Bodycam.estado.json` y `Bodycam_Backups`; consérvalos para restaurar. No instala ENB, CLEO, MoonLoader ni texturas externas.
-
-### Instalación manual
-
-Con GTA cerrado, guarda una copia de tus anteriores `Bodycam.asi` y `Bodycam.ini`, si existen. Copia los dos archivos nuevos junto a `gta_sa.exe`. Hace falta un cargador ASI. Esta vía no crea el registro del instalador: para deshacerla, retira esos dos archivos y recupera tu copia manual. Evita tener otra copia del mismo ASI en `scripts`, `plugins` o `modloader`.
+El ZIP contiene únicamente esos tres archivos. Al cargar el mod, se genera `Bodycam.log` junto al ASI con información breve de inicio.
 
 ## Controles
 
@@ -73,16 +62,18 @@ Los brazos y el arma pertenecen al modelo real del personaje. Algunas skins y an
 
 ## Actualizar o retirar
 
-**Si instalaste con `INSTALAR.cmd`:** cierra GTA, guarda tus valores personales del INI y ejecuta `RETIRAR.cmd` de la versión anterior. Esto restaura lo que había antes de aquella instalación; también conserva tu configuración actual en una carpeta `Bodycam_Backups/retirada-*`. Después extrae e instala el nuevo ZIP. Copia tus valores al INI nuevo para conservar los comentarios y las opciones nuevas.
+**Actualizar:** cierra GTA, respalda el ASI y el INI actuales y sustituye `Bodycam.asi` por el nuevo. Si vienes de 0.4.2, conserva tu `Bodycam.ini` personalizado: las opciones son las mismas. Para otras versiones, compara el INI nuevo y traslada tus valores antes de copiarlo.
 
-**Si instalaste a mano:** con GTA cerrado, respalda el ASI y el INI actuales y sustituye ambos por los nuevos. Traslada tus ajustes al INI nuevo. Para retirar, elimina los dos archivos del mod y restaura el respaldo que quieras conservar.
+**Retirar:** con GTA cerrado, quita `Bodycam.asi` y `Bodycam.ini`. Puedes borrar también `Bodycam.log`. Para volver a una versión anterior, recupera tu copia del ASI y del INI.
+
+Si usaste el instalador de 0.4.1 o 0.4.2 y quieres recuperar los archivos que había antes de aquella instalación, utiliza `RETIRAR.cmd` de ese paquete antiguo antes de instalar manualmente la nueva versión. Guarda primero tu INI personalizado; conserva también los respaldos anteriores.
 
 Cambiar el ASI exige reiniciar GTA. No borres el cargador ASI para retirar Bodycam: otros mods pueden utilizarlo.
 
 ## Si algo no funciona
 
 - **No aparece la vista:** comprueba que modificaste la instalación que realmente abre SA-MP, que el cargador ASI funciona y que `CameraEnabled=1`. Revisa `Bodycam.log` junto al ASI.
-- **Firma no compatible:** el ejecutable o los puntos de cámara/HUD no coinciden con los esperados. No fuerces la instalación cambiando el verificador.
+- **Firma no compatible en el registro:** el ejecutable o los puntos de cámara/HUD no coinciden con los esperados. Comprueba que utilizas GTA SA clásico US 1.0 y revisa otros mods que cambien esos puntos.
 - **La cámara entra en la cara:** aumenta poco a poco `ChestForward`. Si ocurre solo al apuntar, prueba `AimForwardOffset`; comprueba también la altura. El INI explica los límites.
 - **El rótulo tapa el HUD:** aumenta `MarginRight`, o reduce `Scale`. Los márgenes se escalan con la altura de pantalla: a 2160p son el doble que a 1080p con `Scale=1`.
 - **Bajan los FPS:** prueba `RecordingEffect=0` y un FOV algo menor. El coste depende del equipo, la escena y los otros mods; no se garantizan 60 FPS.
@@ -90,10 +81,36 @@ Cambiar el ASI exige reiniciar GTA. No borres el cargador ASI para retirar Bodyc
 
 ## Estado y alcance
 
-**0.4.2 es la versión recomendada.** La vista corporal y la corrección de puntería se han comprobado en GTA SA US 1.0 con SA-MP 0.3.DL-R1. El paquete público usa un icono propio e identificadores genéricos. El alcance de las pruebas se describe en [VALIDACION.md](docs/VALIDACION.md); no equivale a probar todas las skins, armas, servidores o sesiones largas. El diagnóstico de la corrección está en [PUNTERIA.md](docs/PUNTERIA.md).
+**0.4.3 es la versión recomendada.** La vista corporal y la corrección de puntería se han comprobado en GTA SA US 1.0 con SA-MP 0.3.DL-R1. El paquete público usa un icono propio e identificadores genéricos. El alcance de las pruebas se describe en [VALIDACION.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/VALIDACION.md); no equivale a probar todas las skins, armas, servidores o sesiones largas. El diagnóstico de la corrección está en [PUNTERIA.md](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/PUNTERIA.md).
 
 No se valida compatibilidad universal con ENB, ReShade u otros mods que cambien la cámara o el renderizado. El servidor puede tener sus propias reglas sobre mods de cámara. El plugin no necesita configuración del servidor ni envía datos por red.
 
 ## Código y licencia
 
-C++17, Windows x86 y Direct3D 9. [Guía de compilación y estructura](docs/DESARROLLO.md). Código, documentación e icono original bajo [licencia MIT](LICENSE). No se distribuyen archivos de GTA, SA-MP, el cargador ASI ni recursos del mod descargado que inspiró la idea. Consulta [referencias y créditos](docs/CREDITOS.md).
+C++17, Windows x86 y Direct3D 9. [Guía de compilación y estructura](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/DESARROLLO.md) · [Historial de cambios](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/CHANGELOG.md) · [Referencias y créditos](https://github.com/elchimeneas/bodycam-samp/blob/v0.4.3/docs/CREDITOS.md).
+
+Código, documentación e icono original bajo licencia MIT, incluida a continuación. No se distribuyen archivos de GTA, SA-MP, el cargador ASI ni recursos del mod descargado que inspiró la idea.
+
+```text
+MIT License
+
+Copyright (c) 2026 elchimeneas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

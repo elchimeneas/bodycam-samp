@@ -1,3 +1,6 @@
+GUIA HISTORICA DEL INSTALADOR 0.4.2
+Para la version actual usa README.md. Este archivo no se incluye en su ZIP.
+
 BODYCAM SA-MP 0.4.2
 https://github.com/elchimeneas/bodycam-samp
 

@@ -1,7 +1,7 @@
 param()
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
-$version='0.4.2'
+$version='0.4.3'
 $name="Bodycam-SA-MP-$version"
 $binary=Join-Path $PSScriptRoot 'build\Release\Bodycam.asi'
 if (-not (Test-Path -LiteralPath $binary)) { throw 'Compila Release con build.ps1 primero.' }
@@ -12,26 +12,26 @@ $dist=Join-Path $PSScriptRoot 'dist'
 New-Item -ItemType Directory -Path $dist -Force | Out-Null
 # Every run uses a fresh stage; previous output is never mixed into a release.
 $stage=Join-Path $dist ('stage-'+[guid]::NewGuid().ToString('N'))
-$package=Join-Path $stage $name
+$package=$stage
 New-Item -ItemType Directory -Path $package | Out-Null
 Copy-Item -LiteralPath $binary -Destination (Join-Path $package 'Bodycam.asi')
-foreach ($file in @('Bodycam.ini','INSTALAR.cmd','RETIRAR.cmd','Gestionar.ps1','LEEME.txt','README.md','CHANGELOG.md','LICENSE')) {
+foreach ($file in @('Bodycam.ini','README.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $file) -Destination (Join-Path $package $file)
 }
-$docs=Join-Path $package 'docs'
-New-Item -ItemType Directory -Path $docs | Out-Null
-foreach ($file in @('VALIDACION.md','CREDITOS.md','DESARROLLO.md','PUNTERIA.md')) {
-    Copy-Item -LiteralPath (Join-Path $PSScriptRoot "docs\$file") -Destination (Join-Path $docs $file)
-}
-$files=@('Bodycam.asi','Bodycam.ini') | ForEach-Object {
-    @{Name=$_;Hash=(Get-FileHash -LiteralPath (Join-Path $package $_) -Algorithm SHA256).Hash.ToLowerInvariant()}
-}
 $utf8=New-Object Text.UTF8Encoding($false)
-$manifest=@{Version=$version;Files=@($files)} | ConvertTo-Json -Depth 4
-[IO.File]::WriteAllText((Join-Path $package 'manifest.json'),$manifest,$utf8)
 $zip=Join-Path $dist "$name.zip"
-Compress-Archive -LiteralPath $package -DestinationPath $zip -CompressionLevel Optimal -Force
+$files=@('Bodycam.asi','Bodycam.ini','README.md')
+$paths=@($files | ForEach-Object { Join-Path $package $_ })
+Compress-Archive -LiteralPath $paths -DestinationPath $zip -CompressionLevel Optimal -Force
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$archive=[IO.Compression.ZipFile]::OpenRead($zip)
+try {
+    $entries=@($archive.Entries | ForEach-Object { $_.FullName })
+    if ($entries.Count -ne 3 -or (Compare-Object $files $entries)) {
+        throw 'El ZIP debe contener solo Bodycam.asi, Bodycam.ini y README.md en la raiz.'
+    }
+} finally { $archive.Dispose() }
 $sum=(Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
 [IO.File]::WriteAllText((Join-Path $dist 'SHA256SUMS.txt'),"$sum  $name.zip`n",$utf8)
 Write-Output "Player ZIP: $zip"
-Write-Output "Installer test input: $package"
+Write-Output 'Contenido verificado: Bodycam.asi, Bodycam.ini, README.md'

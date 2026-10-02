@@ -1,5 +1,12 @@
 # Cambios
 
+## 0.4.3 — Descarga simplificada
+
+- El ZIP contiene únicamente `Bodycam.asi`, `Bodycam.ini` y `README.md`, directamente en su raíz.
+- Instalación manual: copiar el ASI y el INI junto a `gta_sa.exe`. La guía explica los controles, los ajustes, la actualización y la retirada, e incluye la licencia.
+- El empaquetador comprueba los tres nombres para impedir archivos adicionales en futuras descargas.
+- Conserva la corrección de puntería de 0.4.2 y las mismas opciones del INI. Al actualizar desde 0.4.2 puedes conservar tu INI personalizado.
+
 ## 0.4.2 — Corrección de puntería
 
 - Corrige el desvío entre la mira y el disparo cuando un ajuste panorámico aplica una conversión proporcional entre el FOV interno del juego y el FOV visual.

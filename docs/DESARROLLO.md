@@ -26,12 +26,13 @@ ctest --test-dir build -C Release --output-on-failure
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\package.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\installer_tests.ps1 -PackageDir .\dist\stage-REEMPLAZAR\Bodycam-SA-MP-0.4.2
 ```
 
-Usa la ruta «Installer test input» que imprime el empaquetador. La prueba del instalador crea un ejecutable PE sintético en una carpeta temporal: no necesita ni inicia GTA, y no toca una instalación real. Simula el estado del proceso para comprobar los bloqueos. El paquete usa una lista explícita de archivos; no incluye PDB, EXE de pruebas, fuentes, registros ni archivos de juego. El código se distribuye desde el repositorio y los archivos automáticos «Source code» de GitHub.
+El empaquetador usa una lista explícita y abre el ZIP terminado para comprobar que contiene exactamente `Bodycam.asi`, `Bodycam.ini` y `README.md`, en la raíz. La guía incluye el aviso MIT completo; no necesita un archivo de licencia adicional dentro del ZIP. El código se distribuye desde el repositorio y los archivos automáticos «Source code» de GitHub.
 
-Resultados: `dist/Bodycam-SA-MP-0.4.2.zip` y `dist/SHA256SUMS.txt`. Comprueba también el ZIP extraído y las huellas de `manifest.json` antes de publicar. No edites el ZIP una vez publicado; usa una versión nueva.
+Resultados: `dist/Bodycam-SA-MP-0.4.3.zip` y `dist/SHA256SUMS.txt`. El checksum queda fuera del ZIP para comprobar la descarga. Antes de publicar, compara los tres archivos extraídos con el ASI compilado, el INI y la guía originales. Después, descarga el ZIP público y comprueba su SHA-256. No edites el ZIP una vez publicado; usa una versión nueva.
+
+`Gestionar.ps1`, los CMD, `LEEME.txt` y `tests/installer_tests.ps1` se conservan como herramientas históricas de 0.4.1/0.4.2. No forman parte del paquete actual ni intervienen en su instalación. Las pruebas del instalador solo se aplican a los paquetes antiguos, que incluían `manifest.json`.
 
 ## Estructura
 
@@ -42,8 +43,9 @@ Resultados: `dist/Bodycam-SA-MP-0.4.2.zip` y `dist/SHA256SUMS.txt`. Comprueba ta
 | `src/camera_cycle.h` | Inserta la vista en el ciclo nativo. |
 | `src/config.*` | INI, límites, fecha/hora y posición del rótulo. |
 | `src/renderer.*` | Texto GDI, icono propio y efecto en Direct3D 9, restaurando el estado gráfico. |
-| `tests/` | Cámara con motor simulado, renderizado real aislado e instalador en una carpeta temporal. |
-| `Gestionar.ps1` | Instalación, verificación y restauración. |
+| `tests/` | Cámara con motor simulado y renderizado real aislado; también conserva las pruebas del instalador antiguo. |
+| `package.ps1` | Genera y comprueba el ZIP de tres archivos para jugadores. |
+| `Gestionar.ps1` | Instalador histórico de 0.4.1/0.4.2, conservado en el código fuente. |
 
 ## Detalles de integración
 
