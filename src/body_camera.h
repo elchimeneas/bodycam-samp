@@ -8,6 +8,7 @@ struct Vec2 { float x=0,y=0; };
 bool Finite(Vec3 v);
 Vec3 ChestPosition(Vec3 chest,Vec3 forward,Vec3 right,Vec3 up,float front,float side,float height);
 bool BodyCameraMode(unsigned mode,bool inVehicle);
+float YawCorrection(Vec3 look,Vec3 bodyForward,float limitDegrees);
 
 // Thin engine boundary. Tests supply allocated buffers and an isolated fake engine.
 struct CameraApi {
@@ -35,9 +36,13 @@ private:
     float* globalFov_=nullptr;
     float* spriteNearClip_=nullptr;
     Vec3 matrixPos_{}, source_{}, gamePos_{}, written_{};
+    Vec3 matrixRight_{},matrixFront_{},matrixUp_{},camFront_{},camUp_{};
+    Vec3 writtenRight_{},writtenFront_{},writtenUp_{};
     Vec2 viewWindow_{}, writtenWindow_{};
     float fov_=0,camFov_=0,near_=0,writtenFov_=0,writtenCamFov_=0,writtenNear_=0;
     float spriteNear_=0;
+    float orientation_=0,writtenOrientation_=0;
+    bool yawApplied_=false;
     bool applied_=false;
 };
 }

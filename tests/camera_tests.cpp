@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <limits>
 #include <fstream>
+#include <algorithm>
 
 using namespace bodycam;
 static int count=0;
@@ -26,6 +27,9 @@ struct FakeEngine : CameraApi {
         Put(camera.data(),0x174+0xC,uint16_t(4));Put(camera.data(),0x174+0xB4,70.0f);
         Put(camera.data(),0x174+0x21C,static_cast<void*>(ped.data()));
         Put(camera.data(),0x954,static_cast<void*>(rw.data()));
+        Put(camera.data(),0x974,Vec3{1,0,0});Put(camera.data(),0x984,Vec3{0,1,0});Put(camera.data(),0x994,Vec3{0,0,1});
+        Put(camera.data(),0x174+0x190,Vec3{0,1,0});Put(camera.data(),0x174+0x1B4,Vec3{0,0,1});
+        Put(camera.data(),0x174+0xBC,-1.57079632679f);Put(camera.data(),0x174+0xA0,-1.57079632679f);
         Put(camera.data(),0x974+0x30,Vec3{100,196,22});
         Put(camera.data(),0x908,Vec3{100,196,22});Put(camera.data(),0x174+0x19C,Vec3{100,196,22});
         Put(ped.data(),0x18,static_cast<void*>(ped.data()));Put(ped.data(),0x14,static_cast<void*>(matrix.data()));Put(ped.data(),0x540,100.0f);
@@ -49,7 +53,69 @@ struct FakeEngine : CameraApi {
     void Near(void* p,float v) override {Put(p,0x80,v);}
     void Window(void* p,Vec2 v) override {Put(p,0x68,v);}
 };
+static constexpr float pi=3.14159265358979323846f;
+static Vec3 Add(Vec3 a,Vec3 b) {return {a.x+b.x,a.y+b.y,a.z+b.z};}
+static Vec3 Scale(Vec3 v,float scale) {return {v.x*scale,v.y*scale,v.z*scale};}
+static float Dot(Vec3 a,Vec3 b) {return a.x*b.x+a.y*b.y+a.z*b.z;}
+static Vec3 Cross(Vec3 a,Vec3 b) {return {a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x};}
+static void NativeLook(FakeEngine& api,float yaw,float pitch=0) {
+    const Vec3 front{std::cos(yaw)*std::cos(pitch),std::sin(yaw)*std::cos(pitch),std::sin(pitch)};
+    const Vec3 right{std::sin(yaw),-std::cos(yaw),0};
+    const Vec3 up=Cross(right,front);
+    Put(api.camera.data(),0x974,right);Put(api.camera.data(),0x984,front);Put(api.camera.data(),0x994,up);
+    Put(api.camera.data(),0x174+0x190,front);Put(api.camera.data(),0x174+0x1B4,up);
+    const float beta=std::remainder(yaw+pi,2*pi);
+    Put(api.camera.data(),0x174+0xBC,beta);Put(api.camera.data(),0x174+0xA0,beta);
+    Put(api.camera.data(),0x150,std::atan2(front.x,front.y));
+}
+static void YawTests() {
+    Check(ParseConfig("").cameraYawLimit==45,"yaw limit defaults to 45 degrees per side for existing INIs");
+    Check(ParseConfig("CameraYawLimit=900\n").cameraYawLimit==90 && ParseConfig("CameraYawLimit=-1\n").cameraYawLimit==10,"yaw INI cannot allow a full turn");
+    Check(ParseConfig("CameraYawLimit=nan\n").cameraYawLimit==45 && ParseConfig("CameraYawLimit=60\n").cameraYawLimit==60,"yaw INI accepts a bounded angle and rejects non-finite input");
+    for (unsigned mode : {4u,53u,18u}) for (float heading : {-179.0f,0.0f,90.0f,179.0f})
+    for (float offset : {-170.0f,-75.0f,-30.0f,0.0f,30.0f,75.0f,170.0f}) for (float limit : {10.0f,45.0f,60.0f,90.0f}) {
+        FakeEngine api;BodyCamera cam;Config config;config.cameraYawLimit=limit;
+        const float body=heading*pi/180,look=(heading+offset)*pi/180;
+        Put(api.matrix.data(),0x10,Vec3{std::cos(body),std::sin(body),0});
+        Put(api.camera.data(),0x174+0xC,uint16_t(mode));api.inVehicle=mode==18;
+        NativeLook(api,look,-0.3f);api.fov=88.55f;
+        const auto pedBefore=api.ped,matrixBefore=api.matrix;
+        Check(cam.Apply(api.camera.data(),&api.fov,config,api),"limited view applies on foot, aiming and in vehicles");
+        const auto front=Get<Vec3>(api.camera.data(),0x984),right=Get<Vec3>(api.camera.data(),0x974),up=Get<Vec3>(api.camera.data(),0x994);
+        const float relative=std::remainder(std::atan2(front.y,front.x)-body,2*pi)*180/pi;
+        Check(std::abs(relative-std::clamp(offset,-limit,limit))<0.0001f,"camera stays inside torso limit across world angle wrap");
+        Check(Close(front.z,std::sin(-0.3f)) && Close(Dot(front,right),0) && Close(Dot(front,up),0) && Close(Dot(up,right),0),"yaw clamp preserves pitch and orthogonal camera axes");
+        const auto aimFront=Get<Vec3>(api.camera.data(),0x174+0x190),aimUp=Get<Vec3>(api.camera.data(),0x174+0x1B4);
+        const float spread=std::tan(Get<float>(api.camera.data(),0x174+0xB4)*1.265f*pi/360);
+        const auto ray=Add(Add(aimFront,Scale(Cross(aimFront,aimUp),spread*0.06f)),Scale(aimUp,spread*0.2f/(16.0f/9)));
+        const auto window=Get<Vec2>(api.rw.data(),0x68);
+        Check(Close(0.5f+Dot(ray,right)/(2*Dot(ray,front)*window.x),0.53f) && Close(0.5f-Dot(ray,up)/(2*Dot(ray,front)*window.y),0.40f),"limited weapon ray still projects onto the off-centre reticle");
+        Check(api.ped==pedBefore && api.matrix==matrixBefore,"limiting view does not rotate the player's model");
+        cam.Restore(api);
+        Check(api.fov==88.55f && api.spriteNear==0.9f,"leaving limited view restores FOV and light depth");
+    }
+    FakeEngine api;BodyCamera cam;Config config;
+    NativeLook(api,135*pi/180);
+    for (int i=0;i<1000;++i) {
+        const float previous=Get<float>(api.camera.data(),0x174+0xBC)-pi;
+        NativeLook(api,previous+5*pi/180);
+        Check(cam.Apply(api.camera.data(),&api.fov,config,api),"repeated outward movement applies");
+        const auto front=Get<Vec3>(api.camera.data(),0x984);
+        Check(std::abs(std::atan2(front.y,front.x)*180/pi-135)<0.0001f,"holding outward movement never wraps to the opposite side");
+        cam.Restore(api);
+    }
+    NativeLook(api,Get<float>(api.camera.data(),0x174+0xBC)-pi-5*pi/180);
+    Check(cam.Apply(api.camera.data(),&api.fov,config,api),"reverse movement after sustained stop");
+    auto front=Get<Vec3>(api.camera.data(),0x984);
+    Check(std::abs(std::atan2(front.y,front.x)*180/pi-130)<0.0001f,"reverse movement responds immediately without unwinding hidden input");
+    cam.Restore(api);
+    NativeLook(api,170*pi/180);Check(cam.Apply(api.camera.data(),&api.fov,config,api),"apply before later orientation change");
+    NativeLook(api,pi/2);
+    cam.Restore(api);
+    Check(Close(Get<Vec3>(api.camera.data(),0x984).y,1) && Close(Get<Vec3>(api.camera.data(),0x174+0x190).y,1),"later camera orientation changes are respected");
+}
 int main() {
+    YawTests();
     CameraCycle cycle;
     cycle.Context(100,0,true);
     Check(!cycle.Selected(),"starts in native view");

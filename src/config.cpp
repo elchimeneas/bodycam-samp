@@ -62,6 +62,7 @@ Config ParseConfig(std::string_view text) {
         else if (k == "CameraInVehicles") c.cameraVehicles = Number(v,1,0,1)!=0;
         else if (k == "CameraFOV") c.cameraFov = Real(v,100,60,120);
         else if (k == "CameraNearClip") c.cameraNear = Real(v,Config{}.cameraNear,0.04,0.25);
+        else if (k == "CameraYawLimit") c.cameraYawLimit = Real(v,Config{}.cameraYawLimit,10,90);
         else if (k == "ChestForward") c.chestForward = Real(v,Config{}.chestForward,0.05,0.35);
         else if (k == "ChestSide") c.chestSide = Real(v,Config{}.chestSide,-0.20,0.20);
         else if (k == "ChestHeight") c.chestHeight = Real(v,Config{}.chestHeight,-0.30,0.30);

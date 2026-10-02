@@ -24,6 +24,7 @@ struct Config {
     bool cameraVehicles = true;
     double cameraFov = 100.0;
     double cameraNear = 0.04;
+    double cameraYawLimit = 45.0;
     double chestForward = 0.20;
     double chestSide = 0.01;
     double chestHeight = 0.16;

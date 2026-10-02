@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.5 — Límite de giro de la cámara
+
+- Añade `CameraYawLimit=45`: la cámara puede girar hasta 45 grados a cada lado del torso, 90 grados en total. Admite de 10 a 90 grados por lado; para mirar detrás hay que girar al personaje. Los INI antiguos sin esta opción usan también 45 por defecto.
+- Detiene también la entrada horizontal de la cámara al alcanzar el límite, para responder al invertir el ratón sin acumular una vuelta oculta.
+- Mantiene alineados los ejes de la imagen y del apuntado, y conserva el movimiento vertical, el FOV y la corrección de las luces.
+- El jugador eligió el recorrido total de 90 grados tras instalar la versión local de prueba y autorizó su publicación. Las comprobaciones automáticas de cámara incluyen el nuevo valor; véase el alcance en [GIRO.md](docs/GIRO.md).
+- El ZIP mantiene solo el ASI, el INI explicado y el README. Conserva los ajustes personalizados al actualizar.
+
 ## 0.4.4 — Logotipo amarillo y profundidad de las luces
 
 - La descarga pública muestra el mismo logotipo amarillo que la instalación de referencia. La imagen va integrada en `Bodycam.asi`; el ZIP sigue conteniendo solo el ASI, el INI y el README.

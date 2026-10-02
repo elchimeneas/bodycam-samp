@@ -93,7 +93,7 @@ int main() {
     Check(badLabel.officer.size()==48,"label length bound");
     const Config defaults;
     const auto shipped=LoadConfig(std::filesystem::path(BODYCAM_TEST_INI).wstring());
-    Check(shipped.cameraFov==defaults.cameraFov && shipped.cameraNear==defaults.cameraNear &&
+    Check(shipped.cameraFov==defaults.cameraFov && shipped.cameraNear==defaults.cameraNear && shipped.cameraYawLimit==defaults.cameraYawLimit &&
         shipped.chestForward==defaults.chestForward && shipped.chestSide==defaults.chestSide &&
         shipped.chestHeight==defaults.chestHeight && shipped.aimForwardOffset==defaults.aimForwardOffset &&
         shipped.aimHeightOffset==defaults.aimHeightOffset && shipped.cameraId==defaults.cameraId,
