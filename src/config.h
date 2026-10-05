@@ -19,6 +19,7 @@ struct Config {
     int modifiers = 3; // Ctrl=1, Shift=2, Alt=4
     std::wstring officer = L"AGENTE";
     std::wstring badge;
+    std::wstring cameraLabel = L"AXON BODY 2";
     std::wstring cameraId = L"CAM-0001";
     bool cameraEnabled = true;
     bool cameraVehicles = true;
@@ -35,6 +36,7 @@ struct Config {
 };
 Config ParseConfig(std::string_view text);
 Config LoadConfig(const std::wstring& path);
+std::wstring CameraLine(const Config& config);
 std::wstring Timestamp(const SYSTEMTIME& time, bool utc, int offsetMinutes);
 std::wstring CurrentTimestamp(bool utc);
 struct Layout { int width, height, font, line, logo, pad, x, y; double scale; };

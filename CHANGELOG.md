@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.4.6 — Texto de cámara configurable
+
+- Añade `CameraLabel=AXON BODY 2` al INI. Sustituye el texto fijo `BODYCAM` y admite hasta 48 caracteres UTF-8.
+- Recarga el texto con Ctrl + Shift + R. Si el INI antiguo no incluye la opción, muestra AXON BODY 2.
+- Mantiene `CameraId` como identificador independiente. Un título vacío deja solo el identificador, sin espacios adicionales.
+- Adapta el ancho del rótulo al texto elegido y acorta con puntos suspensivos lo que no cabe.
+- Conserva la cámara y los ajustes existentes. El ZIP sigue incluyendo solo ASI, INI y README.
+
 ## 0.4.5 — Límite de giro de la cámara
 
 - Añade `CameraYawLimit=45`: la cámara puede girar hasta 45 grados a cada lado del torso, 90 grados en total. Admite de 10 a 90 grados por lado; para mirar detrás hay que girar al personaje. Los INI antiguos sin esta opción usan también 45 por defecto.

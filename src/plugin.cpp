@@ -260,7 +260,7 @@ void Init() {
     if (!len || len>=32768) return;
     std::wstring dir(file,len);dir.resize(dir.find_last_of(L"\\/")+1);
     iniPath=dir+L"Bodycam.ini";logPath=dir+L"Bodycam.log";
-    Log("Bodycam 0.4.5 - torso-relative yaw limit, embedded yellow logo and corrected aim/depth, Windows x86",true);
+    Log("Bodycam 0.4.6 - configurable camera label, embedded yellow logo and corrected aim/depth, Windows x86",true);
     if (!SupportedHost()) {Log("Unsupported host or modified hook signature. No hooks installed.");return;}
     if (!WriteCall(kShutdown,Shutdown,originalShutdown,shutdownOriginal)) {Log("Shutdown hook unavailable; overlay inactive.");return;}
     if (!WriteCall(kHud,DrawHud,originalHud,hudOriginal)) {

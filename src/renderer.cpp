@@ -48,7 +48,7 @@ bool Renderer::UpdateText(const Config& c, const Layout& l) {
     GdiFlush();
     std::fill(pixels_,pixels_+size_t(width_)*height_,0u);
     const std::wstring officer=c.officer+(c.badge.empty()?L"":L"  PLACA "+c.badge);
-    const std::wstring lines[]={CurrentTimestamp(c.utc),L"BODYCAM  "+c.cameraId,officer};
+    const std::wstring lines[]={CurrentTimestamp(c.utc),CameraLine(c),officer};
     const int right=l.width-l.pad-(c.showLogo ? l.logo+l.pad : 0);
     for (int n=0;n<(c.showOfficer ? 3 : 2);++n) {
         RECT r{l.pad,l.pad+n*l.line,right,l.pad+(n+1)*l.line};

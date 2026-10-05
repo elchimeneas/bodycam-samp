@@ -30,7 +30,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\package.ps1
 
 El empaquetador usa una lista explícita y abre el ZIP terminado para comprobar que contiene exactamente `Bodycam.asi`, `Bodycam.ini` y `README.md`, en la raíz. La guía incluye el aviso MIT completo; no necesita un archivo de licencia adicional dentro del ZIP. El código se distribuye desde el repositorio y los archivos automáticos «Source code» de GitHub.
 
-Resultados: `dist/Bodycam-SA-MP-0.4.5.zip` y `dist/SHA256SUMS.txt`. El checksum queda fuera del ZIP para comprobar la descarga. Antes de publicar, compara los tres archivos extraídos con el ASI compilado, el INI y la guía originales. Después, descarga el ZIP público y comprueba su SHA-256. No edites el ZIP una vez publicado; usa una versión nueva.
+Resultados: `dist/Bodycam-SA-MP-0.4.6.zip` y `dist/SHA256SUMS.txt`. El checksum queda fuera del ZIP para comprobar la descarga. Antes de publicar, compara los tres archivos extraídos con el ASI compilado, el INI y la guía originales. Después, descarga el ZIP público y comprueba su SHA-256. No edites el ZIP una vez publicado; usa una versión nueva.
 
 `Gestionar.ps1`, los CMD, `LEEME.txt` y `tests/installer_tests.ps1` se conservan como herramientas históricas de 0.4.1/0.4.2. No forman parte del paquete actual ni intervienen en su instalación. Las pruebas del instalador solo se aplican a los paquetes antiguos, que incluían `manifest.json`.
 

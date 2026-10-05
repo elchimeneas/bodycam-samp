@@ -1,7 +1,7 @@
 param()
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
-$version='0.4.5'
+$version='0.4.6'
 $name="Bodycam-SA-MP-$version"
 $binary=Join-Path $PSScriptRoot 'build\Release\Bodycam.asi'
 if (-not (Test-Path -LiteralPath $binary)) { throw 'Compila Release con build.ps1 primero.' }

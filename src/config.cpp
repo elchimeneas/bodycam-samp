@@ -50,6 +50,7 @@ Config ParseConfig(std::string_view text) {
         else if (k == "ShowLogo") c.showLogo = Number(v, 1, 0, 1) != 0;
         else if (k == "Officer") c.officer = Label(v, c.officer, 48);
         else if (k == "Badge") c.badge = Label(v, c.badge, 16);
+        else if (k == "CameraLabel") c.cameraLabel = Label(v, c.cameraLabel, 48);
         else if (k == "CameraId") c.cameraId = Label(v, c.cameraId, 24);
         else if (k == "FontSize") c.fontSize = Number(v, 20, 12, 36);
         else if (k == "MarginRight") c.marginRight = Number(v, 260, 0, 1920);
@@ -106,6 +107,11 @@ std::wstring CurrentTimestamp(bool utc) {
     }
     return Timestamp(t, utc, offset);
 }
+std::wstring CameraLine(const Config& c) {
+    if (c.cameraLabel.empty()) return c.cameraId;
+    if (c.cameraId.empty()) return c.cameraLabel;
+    return c.cameraLabel + L"  " + c.cameraId;
+}
 Layout MakeLayout(const Config& c, int w, int h) {
     Layout l{};
     const double res = std::clamp(h / 1080.0, 0.4, 4.0);
@@ -114,7 +120,7 @@ Layout MakeLayout(const Config& c, int w, int h) {
     l.line = l.font + std::max(3, l.font / 5);
     l.pad = std::max(3, l.font / 4);
     l.logo = c.showLogo ? l.line * 2 : 0;
-    size_t characters=std::max(size_t(25),size_t(13)+c.cameraId.size());
+    size_t characters=std::max(size_t(25),CameraLine(c).size());
     if (c.showOfficer) characters=std::max(characters,c.officer.size()+(c.badge.empty()?0:8+c.badge.size()));
     const double content=characters*l.font*0.65+l.logo+l.pad*3;
     l.width = std::min(w, int(std::ceil(std::min(720*l.scale,content))));

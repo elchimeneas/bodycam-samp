@@ -96,9 +96,13 @@ int main() {
     Check(shipped.cameraFov==defaults.cameraFov && shipped.cameraNear==defaults.cameraNear && shipped.cameraYawLimit==defaults.cameraYawLimit &&
         shipped.chestForward==defaults.chestForward && shipped.chestSide==defaults.chestSide &&
         shipped.chestHeight==defaults.chestHeight && shipped.aimForwardOffset==defaults.aimForwardOffset &&
-        shipped.aimHeightOffset==defaults.aimHeightOffset && shipped.cameraId==defaults.cameraId,
+        shipped.aimHeightOffset==defaults.aimHeightOffset && shipped.cameraId==defaults.cameraId && shipped.cameraLabel==defaults.cameraLabel,
         "shipped INI and compiled camera defaults agree");
     Check(defaults.cameraFov==100 && defaults.marginRight==260 && defaults.recordingEffect,"requested defaults");
+    Check(CameraLine(ParseConfig("CameraId=TEST-01"))==L"AXON BODY 2  TEST-01","old INI uses default camera label");
+    Check(CameraLine(ParseConfig("CameraLabel=CÁMARA LOCAL\nCameraId="))==L"CÁMARA LOCAL","UTF-8 camera label without ID");
+    Check(CameraLine(ParseConfig("CameraLabel=\nCameraId=TEST-01"))==L"TEST-01","empty camera label leaves ID without padding");
+    Check(ParseConfig("CameraLabel="+std::string(100,'X')).cameraLabel.size()==48,"camera label length bounded");
     const auto effectOff=ParseConfig("RecordingEffect=0\nEffectIntensity=0.75\n");
     Check(!effectOff.recordingEffect && effectOff.effectIntensity==0.75,"effect switch parsed independently");
     Check(ParseConfig("EffectIntensity=nan\n").effectIntensity==0.25 && ParseConfig("EffectIntensity=100\n").effectIntensity==1 && ParseConfig("EffectIntensity=-1\n").effectIntensity==0,"effect intensity bounded");
@@ -180,6 +184,17 @@ int main() {
             if ((x<label.x || x>=label.x+label.width || y<label.y || y>=label.y+label.height) && disabled[size_t(y)*1920+x]!=0x34495E) clean=false;
         }
         Check(clean,"effect disabled leaves every pixel outside label untouched");
+        // Reload a label of the same length: texture dimensions cannot mask a stale title.
+        c.cameraLabel=L"TEST CAM 2";
+        device->Clear(0,nullptr,D3DCLEAR_TARGET,0xFF34495E,1,0);device->BeginScene();
+        Check(renderer.Draw(device.Get(),c,module,true),"reload camera label");device->EndScene();
+        const auto renamed=Pixels(device.Get());
+        size_t titleChanges=0;
+        for (int y=label.y+label.pad+label.line;y<label.y+label.pad+2*label.line;++y)
+            for (int x=label.x;x<label.x+label.width;++x)
+                if (renamed[size_t(y)*1920+x]!=disabled[size_t(y)*1920+x]) ++titleChanges;
+        Check(titleChanges>20,"config reload replaces actual rendered camera title");
+        c.cameraLabel=Config{}.cameraLabel;
         c.showLogo=false;
         device->Clear(0,nullptr,D3DCLEAR_TARGET,0xFF34495E,1,0);device->BeginScene();
         Check(renderer.Draw(device.Get(),c,module,true),"label draws with logo disabled");device->EndScene();
